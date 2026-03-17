@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Audit Report — https://janekissington.github.io</title>
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-hover: #253349;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: #334155;
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.1);
+      --yellow: #eab308;
+      --yellow-bg: rgba(234, 179, 8, 0.1);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.1);
+      --blue: #3b82f6;
+      --blue-bg: rgba(59, 130, 246, 0.1);
+      --accent: #6366f1;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -2px rgba(0,0,0,0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Hero / Header */
+    .hero {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1a1a2e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 0 40px;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .brand-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .report-meta {
+      text-align: right;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .hero-url {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      word-break: break-all;
+    }
+
+    .hero-url a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .hero-url a:hover { text-decoration: underline; }
+
+    /* Overall Score */
+    .score-section {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .overall-score-ring {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      flex-shrink: 0;
+    }
+
+    .overall-score-ring svg {
+      transform: rotate(-90deg);
+      width: 140px;
+      height: 140px;
+    }
+
+    .overall-score-ring .bg-ring {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 8;
+    }
+
+    .overall-score-ring .score-ring {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: calc(408 - (408 * var(--score)) / 100);
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .overall-score-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .overall-score-number {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .overall-score-grade {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .score-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .score-stats h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 24px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .stat-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .stat-dot.pass { background: var(--green); }
+    .stat-dot.fail { background: var(--red); }
+    .stat-dot.total { background: var(--blue); }
+
+    /* Navigation */
+    .nav-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      overflow-x: auto;
+    }
+
+    .nav-inner {
+      display: flex;
+      gap: 0;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 16px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 13px;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      border-left: none !important;
+      transition: all 0.2s;
+    }
+
+    .nav-item:hover {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.03);
+      border-bottom-color: var(--text-muted);
+    }
+
+    .nav-score {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .nav-label { font-weight: 500; }
+
+    /* Category Cards */
+    .categories-section {
+      padding: 32px 0 60px;
+    }
+
+    .category-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .category-header:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .category-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .category-score-ring {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: conic-gradient(var(--color) calc(var(--score) * 3.6deg), var(--border) 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .category-score-value {
+      background: var(--bg-card);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .category-info h2 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .category-summary {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .category-arrow {
+      font-size: 18px;
+      color: var(--text-muted);
+      transition: transform 0.3s;
+    }
+
+    .category-card.collapsed .category-body {
+      display: none;
+    }
+
+    .category-card.collapsed .category-arrow {
+      transform: rotate(-90deg);
+    }
+
+    .category-body {
+      border-top: 1px solid var(--border);
+    }
+
+    /* Check Items */
+    .check-item {
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+    }
+
+    .check-item:last-child { border-bottom: none; }
+
+    .check-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .check-header:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .check-status {
+      font-size: 16px;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .check-status.pass { color: var(--green); }
+    .check-status.fail { color: var(--red); }
+
+    .check-title {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .check-arrow {
+      font-size: 12px;
+      color: var(--text-muted);
+      transition: transform 0.3s;
+    }
+
+    .check-item.expanded .check-arrow {
+      transform: rotate(180deg);
+    }
+
+    .check-body {
+      display: none;
+      padding: 0 24px 14px 60px;
+    }
+
+    .check-item.expanded .check-body {
+      display: block;
+    }
+
+    .check-value {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      word-break: break-all;
+      background: rgba(0,0,0,0.2);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      line-height: 1.5;
+    }
+
+    .recommendation {
+      font-size: 13px;
+      color: var(--yellow);
+      background: var(--yellow-bg);
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-top: 8px;
+      border-left: 3px solid var(--yellow);
+    }
+
+    .recommendation strong {
+      color: var(--yellow);
+    }
+
+    .check-details {
+      list-style: none;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .check-details li {
+      padding: 3px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .check-details li::before {
+      content: "\2022";
+      position: absolute;
+      left: 0;
+    }
+
+    .check-details .more {
+      font-style: italic;
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+    }
+
+    .footer-brand {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .footer-link {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .footer-link a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-link a:hover { text-decoration: underline; }
+
+    /* Print styles */
+    @media print {
+      body { background: #fff; color: #1a1a1a; }
+      .nav-bar { display: none; }
+      .hero { background: #f8f9fa; }
+      .category-card { break-inside: avoid; }
+      .check-body { display: block !important; }
+      .category-body { display: block !important; }
+      .check-arrow, .category-arrow { display: none; }
+      .category-card { background: #fff; border: 1px solid #ddd; }
+      .check-value { background: #f5f5f5; color: #333; }
+      .recommendation { color: #856404; background: #fff3cd; border-left-color: #856404; }
+      .recommendation strong { color: #856404; }
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .score-section { flex-direction: column; align-items: center; text-align: center; }
+      .stat-row { justify-content: center; }
+      .hero { padding: 32px 0 28px; }
+      .hero-top { flex-direction: column; gap: 12px; }
+      .report-meta { text-align: center; }
+      .category-header { padding: 16px; }
+      .check-header { padding: 12px 16px; }
+      .check-body { padding: 0 16px 12px 44px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="brand-icon">S</div>
+          <span class="brand-name">SiteAudit</span>
+        </div>
+        <div class="report-meta">
+          March 17, 2026<br>03:45 AM &middot; 0.8s
+        </div>
+      </div>
+
+      <div class="hero-url">
+        Audit report for <a href="https://janekissington.github.io" target="_blank" rel="noopener">https://janekissington.github.io</a>
+      </div>
+
+      <div class="score-section">
+        <div class="overall-score-ring" style="--score: 82">
+          <svg viewBox="0 0 140 140">
+            <circle class="bg-ring" cx="70" cy="70" r="65" />
+            <circle class="score-ring" cx="70" cy="70" r="65"
+              style="stroke: #22c55e; --score: 82" />
+          </svg>
+          <div class="overall-score-text">
+            <div class="overall-score-number" style="color: #22c55e">82</div>
+            <div class="overall-score-grade">Grade B</div>
+          </div>
+        </div>
+
+        <div class="score-stats">
+          <div>
+            <h1>Website Audit Report</h1>
+            <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">
+              6 categories analyzed &middot; 52 checks performed
+            </p>
+          </div>
+          <div class="stat-row">
+            <div class="stat-item"><span class="stat-dot pass"></span> 40 Passed</div>
+            <div class="stat-item"><span class="stat-dot fail"></span> 12 Failed</div>
+            <div class="stat-item"><span class="stat-dot total"></span> 52 Total</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <a href="#cat-performance" class="nav-item" style="border-left: 3px solid #22c55e">
+      <span class="nav-score" style="color: #22c55e">85</span>
+      <span class="nav-label">Performance</span>
+    </a>
+<a href="#cat-seo" class="nav-item" style="border-left: 3px solid #eab308">
+      <span class="nav-score" style="color: #eab308">67</span>
+      <span class="nav-label">SEO</span>
+    </a>
+<a href="#cat-security" class="nav-item" style="border-left: 3px solid #ef4444">
+      <span class="nav-score" style="color: #ef4444">47</span>
+      <span class="nav-label">Security</span>
+    </a>
+<a href="#cat-accessibility" class="nav-item" style="border-left: 3px solid #22c55e">
+      <span class="nav-score" style="color: #22c55e">94</span>
+      <span class="nav-label">Accessibility</span>
+    </a>
+<a href="#cat-technical" class="nav-item" style="border-left: 3px solid #22c55e">
+      <span class="nav-score" style="color: #22c55e">100</span>
+      <span class="nav-label">Technical</span>
+    </a>
+<a href="#cat-ssl" class="nav-item" style="border-left: 3px solid #22c55e">
+      <span class="nav-score" style="color: #22c55e">100</span>
+      <span class="nav-label">SSL Certificate</span>
+    </a>
+    </div>
+  </nav>
+
+  <!-- Categories -->
+  <section class="categories-section">
+    <div class="container">
+      
+      <div class="category-card" id="cat-performance">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="category-header-left">
+            <div class="category-score-ring" style="--score: 85; --color: #22c55e">
+              <span class="category-score-value">85</span>
+            </div>
+            <div class="category-info">
+              <h2>Performance</h2>
+              <span class="category-summary">6 passed &middot; 1 failed</span>
+            </div>
+          </div>
+          <span class="category-arrow">&#9662;</span>
+        </div>
+        <div class="category-body">
+          
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Page Load Time</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">318ms</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">HTML Document Size</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">37KB</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Number of Resources</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">0 (0 scripts, 0 CSS, 0 images, 0 iframes)</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Largest Contentful Paint Hints</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">0 images found</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">Response Compression</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">none</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Enable gzip or brotli compression on the server to reduce transfer sizes.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Cache Headers</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">max-age=600</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Inline Script/Style Size</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">17KB inline (2KB JS, 15KB CSS)</div>
+            
+            
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="category-card" id="cat-seo">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="category-header-left">
+            <div class="category-score-ring" style="--score: 67; --color: #eab308">
+              <span class="category-score-value">67</span>
+            </div>
+            <div class="category-info">
+              <h2>SEO</h2>
+              <span class="category-summary">7 passed &middot; 4 failed</span>
+            </div>
+          </div>
+          <span class="category-arrow">&#9662;</span>
+        </div>
+        <div class="category-body">
+          
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Title Tag</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Jane Kissington — Developer Tools &amp; Automation</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">Meta Description</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Full-stack developer specializing in developer tools, automation, and website auditing. Get a professional 52-point website audit or browse production-ready starter kits.</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Meta description is 170 characters. Keep it under 160 characters.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">H1 Heading</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Jane Kissington</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Heading Hierarchy</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">15 headings found</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Image Alt Attributes</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No images</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">Canonical URL</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set)</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Add a &lt;link rel=&quot;canonical&quot;&gt; tag to prevent duplicate content issues.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">robots.txt</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Not found or empty</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Create a robots.txt file to guide search engine crawlers.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">sitemap.xml</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Not found or invalid</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Create an XML sitemap to help search engines discover your pages.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Open Graph Tags</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">3/4 tags present (title: yes, description: yes, image: no, type: yes)</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Twitter Card Tags</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Card type: summary</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Meta Robots</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set — defaults to index, follow)</div>
+            
+            
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="category-card" id="cat-security">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="category-header-left">
+            <div class="category-score-ring" style="--score: 47; --color: #ef4444">
+              <span class="category-score-value">47</span>
+            </div>
+            <div class="category-info">
+              <h2>Security</h2>
+              <span class="category-summary">4 passed &middot; 6 failed</span>
+            </div>
+          </div>
+          <span class="category-arrow">&#9662;</span>
+        </div>
+        <div class="category-body">
+          
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">HTTPS</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Yes</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">Content Security Policy (CSP)</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set)</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Add a Content-Security-Policy header to prevent XSS, clickjacking, and other code injection attacks.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">HTTP Strict Transport Security (HSTS)</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">max-age=31556952</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">X-Frame-Options</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set)</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Add X-Frame-Options header (DENY or SAMEORIGIN) to prevent clickjacking attacks.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">X-Content-Type-Options</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set)</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Add X-Content-Type-Options: nosniff to prevent MIME type sniffing.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">Referrer-Policy</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set)</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Add a Referrer-Policy header (e.g., strict-origin-when-cross-origin) to control referrer information.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">Permissions-Policy</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set)</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Add a Permissions-Policy header to control browser feature access (camera, geolocation, etc.).</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Mixed Content</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No mixed content detected</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">X-XSS-Protection</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">(not set)</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Consider adding X-XSS-Protection: 0 (modern recommendation with CSP) or 1; mode=block as a legacy fallback.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Server Header Information Disclosure</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">GitHub.com</div>
+            
+            
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="category-card" id="cat-accessibility">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="category-header-left">
+            <div class="category-score-ring" style="--score: 94; --color: #22c55e">
+              <span class="category-score-value">94</span>
+            </div>
+            <div class="category-info">
+              <h2>Accessibility</h2>
+              <span class="category-summary">9 passed &middot; 1 failed</span>
+            </div>
+          </div>
+          <span class="category-arrow">&#9662;</span>
+        </div>
+        <div class="category-body">
+          
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">HTML lang Attribute</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">en</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Viewport Meta Tag</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">width=device-width, initial-scale=1.0</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Zoom/Scaling Not Restricted</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Users can zoom freely</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item fail">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status fail">&#10007;</span>
+            <span class="check-title">Skip Navigation Link</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Not found</div>
+            <div class="recommendation"><strong>Recommendation:</strong> Add a &quot;skip to main content&quot; link at the top of the page for keyboard navigation users.</div>
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Form Input Labels</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">2/2 inputs have labels</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Image Alt Attributes</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No images</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Descriptive Link Text</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">0 empty links, 0 generic link texts</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">ARIA Landmarks</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">main: no, nav: yes</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Color Contrast Hints</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No obvious contrast issues in inline styles</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">DOCTYPE Declaration</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Present</div>
+            
+            
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="category-card" id="cat-technical">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="category-header-left">
+            <div class="category-score-ring" style="--score: 100; --color: #22c55e">
+              <span class="category-score-value">100</span>
+            </div>
+            <div class="category-info">
+              <h2>Technical</h2>
+              <span class="category-summary">8 passed &middot; 0 failed</span>
+            </div>
+          </div>
+          <span class="category-arrow">&#9662;</span>
+        </div>
+        <div class="category-body">
+          
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Internal Broken Links</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">0 broken out of 0 checked (0 total internal links)</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Redirect Chain</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No redirects</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">HTML Quality</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No common issues detected</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Mobile Viewport Configuration</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">width=device-width, initial-scale=1.0</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Favicon</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">data:image/svg+xml,&lt;svg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 100 100&#39;&gt;&lt;rect rx=&#39;18&#39; width=&#39;100&#39; height=&#39;100&#39; fill=&#39;%230d1117&#39;/&gt;&lt;text x=&#39;50&#39; y=&#39;68&#39; font-size=&#39;52&#39; text-anchor=&#39;middle&#39; fill=&#39;%2358a6ff&#39; font-family=&#39;monospace&#39; font-weight=&#39;bold&#39;&gt;JK&lt;/text&gt;&lt;/svg&gt;</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Character Encoding (UTF-8)</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">UTF-8</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Responsive Images</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No images</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Resource References</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">No suspicious resource references</div>
+            
+            
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="category-card" id="cat-ssl">
+        <div class="category-header" onclick="this.parentElement.classList.toggle('collapsed')">
+          <div class="category-header-left">
+            <div class="category-score-ring" style="--score: 100; --color: #22c55e">
+              <span class="category-score-value">100</span>
+            </div>
+            <div class="category-info">
+              <h2>SSL Certificate</h2>
+              <span class="category-summary">6 passed &middot; 0 failed</span>
+            </div>
+          </div>
+          <span class="category-arrow">&#9662;</span>
+        </div>
+        <div class="category-body">
+          
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Certificate Valid</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Certificate is valid and trusted</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Certificate Issuer</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Let&#39;s Encrypt</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Certificate Expiry</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">Expires 2026-05-07 (51 days)</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">TLS Protocol Version</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">TLSv1.3</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Cipher Suite</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">TLS_AES_128_GCM_SHA256</div>
+            
+            
+          </div>
+        </div>
+
+        <div class="check-item pass">
+          <div class="check-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <span class="check-status pass">&#10003;</span>
+            <span class="check-title">Subject Alternative Names</span>
+            <span class="check-arrow">&#9662;</span>
+          </div>
+          <div class="check-body">
+            <div class="check-value">DNS:*.github.com, DNS:*.github.io, DNS:*.githubusercontent.com, DNS:github.com, DNS:github.io, DNS:githubusercontent.com</div>
+            
+            
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-brand">Generated by SiteAudit CLI</div>
+      <div class="footer-link">
+        <a href="https://github.com/siteaudit/site-audit-cli" target="_blank" rel="noopener">github.com/siteaudit/site-audit-cli</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Expand all failed checks by default
+    document.querySelectorAll('.check-item.fail').forEach(function(el) {
+      el.classList.add('expanded');
+    });
+  </script>
+</body>
+</html>
